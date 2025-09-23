@@ -1,0 +1,286 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Light theme colors - green palette */
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --card: #F8FAFC;
+  --card-foreground: #0F172A;
+  --popover: #F8FAFC;
+  --popover-foreground: #0F172A;
+  --primary: #059669;
+  --primary-foreground: #F8FAFC;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+  --muted: #F1F5F9;
+  --muted-foreground: #475569;
+  --accent: #34D399;
+  --accent-foreground: #0F172A;
+  --destructive: oklch(0.55 0.22 25.331);
+  --destructive-foreground: oklch(0.99 0.005 106.423);
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #059669;
+  --chart-1: #059669;
+  --chart-2: #10B981;
+  --chart-3: #34D399;
+  --chart-4: #0F172A;
+  --chart-5: #F1F5F9;
+  --radius: 0.625rem;
+  --sidebar: #F1F5F9;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #059669;
+  --sidebar-primary-foreground: #F8FAFC;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #0F172A;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #059669;
+
+  /* Light theme brand colors - green palette */
+  --brand-light: #F8FAFC;
+  --brand-light-section: #F1F5F9;
+  --brand-text-light: #0F172A;
+  --brand-muted-light: #475569;
+  --brand-accent-light: #059669;
+  --brand-accent-hover: #047857;
+}
+
+.dark {
+  /* Dark mode colors - green palette with black background */
+  --background: #000000;
+  --foreground: #F8FAFC;
+  --card: #000000;
+  --card-foreground: #F8FAFC;
+  --popover: #000000;
+  --popover-foreground: #F8FAFC;
+  --primary: #34D399;
+  --primary-foreground: #000000;
+  --secondary: #111827;
+  --secondary-foreground: #F8FAFC;
+  --muted: #111827;
+  --muted-foreground: #9CA3AF;
+  --accent: #059669;
+  --accent-foreground: #F8FAFC;
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: #374151;
+  --input: #374151;
+  --ring: #34D399;
+  --chart-1: #34D399;
+  --chart-2: #10B981;
+  --chart-3: #059669;
+  --chart-4: #F8FAFC;
+  --chart-5: #111827;
+  --sidebar: #111827;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #34D399;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #111827;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: #374151;
+  --sidebar-ring: #34D399;
+
+  /* Dark theme brand colors - green palette with black background */
+  --brand-dark: #000000;
+  --brand-dark-section: #0b0c0e;
+  --brand-text-dark: #F8FAFC;
+  --brand-muted-dark: #9CA3AF;
+  --brand-accent-dark: #34D399;
+  --brand-accent-hover-dark: #10B981;
+}
+
+@theme inline {
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Added custom brand color utilities */
+  --color-brand-light: var(--brand-light);
+  --color-brand-light-section: var(--brand-light-section);
+  --color-brand-text-light: var(--brand-text-light);
+  --color-brand-muted-light: var(--brand-muted-light);
+  --color-brand-accent-light: var(--brand-accent-light);
+  --color-brand-accent-hover: var(--brand-accent-hover);
+  
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-dark-section: var(--brand-dark-section);
+  --color-brand-text-dark: var(--brand-text-dark);
+  --color-brand-muted-dark: var(--brand-muted-dark);
+  --color-brand-accent-dark: var(--brand-accent-dark);
+  --color-brand-accent-hover-dark: var(--brand-accent-hover-dark);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Added custom typography styles */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* Added custom utility classes for brand styling */
+@layer utilities {
+  /* Light theme utilities */
+  .bg-brand-light {
+    background-color: var(--brand-light);
+  }
+
+  .bg-brand-light-section {
+    background-color: var(--brand-light-section);
+  }
+
+  .text-brand-light {
+    color: var(--brand-text-light);
+  }
+
+  .text-brand-muted-light {
+    color: var(--brand-muted-light);
+  }
+
+  .text-brand-accent-light {
+    color: var(--brand-accent-light);
+  }
+
+  .hover\:text-brand-accent-hover:hover {
+    color: var(--brand-accent-hover);
+  }
+
+  /* Dark theme utilities */
+  .bg-brand-dark {
+    background-color: var(--brand-dark);
+  }
+
+  .bg-brand-dark-section {
+    background-color: var(--brand-dark-section);
+  }
+
+  .text-brand-dark {
+    color: var(--brand-text-dark);
+  }
+
+  .text-brand-muted-dark {
+    color: var(--brand-muted-dark);
+  }
+
+  .text-brand-accent-dark {
+    color: var(--brand-accent-dark);
+  }
+
+  .hover\:text-brand-accent-hover-dark:hover {
+    color: var(--brand-accent-hover-dark);
+  }
+
+  /* Theme-aware utilities */
+  .bg-brand {
+    background-color: var(--brand-light);
+  }
+
+  .dark .bg-brand {
+    background-color: var(--brand-dark);
+  }
+
+  .bg-brand-section {
+    background-color: var(--brand-light-section);
+  }
+
+  .dark .bg-brand-section {
+    background-color: var(--brand-dark-section);
+  }
+
+  .text-brand {
+    color: var(--brand-text-light);
+  }
+
+  .dark .text-brand {
+    color: var(--brand-text-dark);
+  }
+
+  .text-brand-muted {
+    color: var(--brand-muted-light);
+  }
+
+  .dark .text-brand-muted {
+    color: var(--brand-muted-dark);
+  }
+
+  .text-brand-accent {
+    color: var(--brand-accent-light);
+  }
+
+  .dark .text-brand-accent {
+    color: var(--brand-accent-dark);
+  }
+
+  .hover\:text-brand-accent:hover {
+    color: var(--brand-accent-hover);
+  }
+
+  .dark .hover\:text-brand-accent:hover {
+    color: var(--brand-accent-hover-dark);
+  }
+
+  .bg-brand-accent {
+    background-color: var(--brand-accent-light);
+  }
+
+  .dark .bg-brand-accent {
+    background-color: var(--brand-accent-dark);
+  }
+
+  .hover\:bg-brand-accent\/90:hover {
+    background-color: var(--brand-accent-hover);
+  }
+
+  .dark .hover\:bg-brand-accent\/90:hover {
+    background-color: var(--brand-accent-hover-dark);
+  }
+}
