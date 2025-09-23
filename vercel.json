@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/marketing/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
+      }
+    },
+    {
+      "src": "apps/cms/package.json", 
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/cms/(.*)",
+      "dest": "/apps/cms/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/apps/marketing/$1"
+    }
+  ]
+}

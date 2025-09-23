@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "buildCommand": "cd ../.. && pnpm install && pnpm build --filter=cms",
+  "outputDirectory": ".next", 
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "nextjs"
+}
