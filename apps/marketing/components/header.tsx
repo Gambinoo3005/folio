@@ -15,13 +15,13 @@ export function Header() {
       className="sticky top-0 z-50 w-full transition-all duration-200 border-b border-border/50 bg-background"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-14 sm:h-16 items-center justify-between">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
             <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-[#059669] to-[#34D399] flex items-center justify-center">
                 <span className="text-white font-bold text-sm">P</span>
               </div>
-              <span className="text-foreground font-semibold text-lg">Portfolio CMS</span>
+              <span className="text-foreground font-semibold text-base sm:text-lg">Portfolio CMS</span>
             </Link>
           </motion.div>
 

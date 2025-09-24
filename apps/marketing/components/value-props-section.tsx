@@ -47,7 +47,7 @@ export function ValuePropsSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {valueProps.map((prop, index) => (
             <motion.div
               key={index}
@@ -57,7 +57,7 @@ export function ValuePropsSection() {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-200 hover:-translate-y-1">
+              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10 hover:border-white/20 transition-all duration-200 hover:-translate-y-1">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center mb-6"
                   style={{ backgroundColor: `${prop.color}20` }}

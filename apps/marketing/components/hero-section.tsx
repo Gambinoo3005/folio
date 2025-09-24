@@ -172,7 +172,7 @@ export function HeroSection() {
       {/* Rotating profession icons */}
       <div className="absolute inset-0">
         {/* Top Left Position */}
-        <div className="absolute top-20 left-20 lg:top-32 lg:left-32 group cursor-pointer">
+        <div className="absolute top-8 left-4 sm:top-12 sm:left-8 md:top-16 md:left-12 lg:top-32 lg:left-32 group cursor-pointer">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIcons.topLeft}
@@ -184,7 +184,7 @@ export function HeroSection() {
             >
               {(() => {
                 const IconComponent = iconBank[currentIcons.topLeft].icon
-                return <IconComponent className="h-16 w-16 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
+                return <IconComponent className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
               })()}
             </motion.div>
           </AnimatePresence>
@@ -198,7 +198,7 @@ export function HeroSection() {
         </div>
 
         {/* Top Right Position */}
-        <div className="absolute top-20 right-20 lg:top-32 lg:right-32 group cursor-pointer">
+        <div className="absolute top-8 right-4 sm:top-12 sm:right-8 md:top-16 md:right-12 lg:top-32 lg:right-32 group cursor-pointer">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIcons.topRight}
@@ -210,7 +210,7 @@ export function HeroSection() {
             >
               {(() => {
                 const IconComponent = iconBank[currentIcons.topRight].icon
-                return <IconComponent className="h-16 w-16 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
+                return <IconComponent className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
               })()}
             </motion.div>
           </AnimatePresence>
@@ -224,7 +224,7 @@ export function HeroSection() {
         </div>
 
         {/* Bottom Left Position */}
-        <div className="absolute bottom-20 left-20 lg:bottom-32 lg:left-32 group cursor-pointer">
+        <div className="absolute bottom-8 left-4 sm:bottom-12 sm:left-8 md:bottom-16 md:left-12 lg:bottom-32 lg:left-32 group cursor-pointer">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIcons.bottomLeft}
@@ -236,7 +236,7 @@ export function HeroSection() {
             >
               {(() => {
                 const IconComponent = iconBank[currentIcons.bottomLeft].icon
-                return <IconComponent className="h-16 w-16 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
+                return <IconComponent className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
               })()}
             </motion.div>
           </AnimatePresence>
@@ -250,7 +250,7 @@ export function HeroSection() {
         </div>
 
         {/* Bottom Right Position */}
-        <div className="absolute bottom-20 right-20 lg:bottom-32 lg:right-32 group cursor-pointer">
+        <div className="absolute bottom-8 right-4 sm:bottom-12 sm:right-8 md:bottom-16 md:right-12 lg:bottom-32 lg:right-32 group cursor-pointer">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIcons.bottomRight}
@@ -262,7 +262,7 @@ export function HeroSection() {
             >
               {(() => {
                 const IconComponent = iconBank[currentIcons.bottomRight].icon
-                return <IconComponent className="h-16 w-16 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
+                return <IconComponent className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-20 lg:w-20 text-[#059669] stroke-1" />
               })()}
             </motion.div>
           </AnimatePresence>
@@ -276,24 +276,24 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-32">
         <div className="flex justify-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="space-y-8 text-center max-w-4xl relative z-10"
+            className="space-y-6 sm:space-y-8 text-center max-w-4xl relative z-10"
           >
-            <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold text-brand leading-tight text-balance">
+            <div className="space-y-4 sm:space-y-6">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-brand leading-tight text-balance">
                 Bespoke portfolio websites with a <span className="text-brand-accent">built-in CMS</span>
               </h1>
-              <p className="text-xl text-brand-muted leading-relaxed text-pretty max-w-2xl mx-auto">
+              <p className="text-lg sm:text-xl text-brand-muted leading-relaxed text-pretty max-w-2xl mx-auto px-4 sm:px-0">
                 Custom full-stack builds tailored to your craft—fast, secure, and effortless to update.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
               <Button size="lg" className="bg-brand-accent hover:bg-brand-accent/90 text-white group">
                 Book a 15-min intro
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

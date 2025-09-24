@@ -37,15 +37,15 @@ export function SocialProofSection() {
           <p className="text-brand-muted text-sm uppercase tracking-wider mb-8">Used by creators from</p>
 
           {/* Logo placeholders */}
-          <div className="flex justify-center items-center space-x-12 mb-16 opacity-60">
-            <div className="text-brand-muted text-lg font-semibold">Adobe</div>
-            <div className="text-brand-muted text-lg font-semibold">Figma</div>
-            <div className="text-brand-muted text-lg font-semibold">Dribbble</div>
-            <div className="text-brand-muted text-lg font-semibold">Behance</div>
+          <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 lg:gap-12 mb-16 opacity-60">
+            <div className="text-brand-muted text-sm sm:text-lg font-semibold">Adobe</div>
+            <div className="text-brand-muted text-sm sm:text-lg font-semibold">Figma</div>
+            <div className="text-brand-muted text-sm sm:text-lg font-semibold">Dribbble</div>
+            <div className="text-brand-muted text-sm sm:text-lg font-semibold">Behance</div>
           </div>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}

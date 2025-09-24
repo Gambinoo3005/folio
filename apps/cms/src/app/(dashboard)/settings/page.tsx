@@ -2,82 +2,58 @@ import { CmsLayout } from "@/components/cms-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
+import { OrganizationSetup } from "@/components/organization-setup"
 import { 
   Settings as SettingsIcon, 
   Building2, 
   Globe, 
   CreditCard, 
   Users, 
-  HardDrive, 
-  Calendar,
-  Webhook,
-  BarChart3,
-  Crown,
-  Info,
-  ExternalLink
+  HardDrive,
+  ArrowRight
 } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import Link from "next/link"
+import { getCurrentTenantBilling } from "@/server/actions/billing"
+import { getTenantUsage } from "@/server/features"
+import { BillingPlan } from "@prisma/client"
 
-export default function Settings() {
-  // Mock data - in real app this would come from API
-  const tenantInfo = {
-    name: "Acme Photography Studio",
-    domain: "acmephoto.com",
-    plan: "Care+",
-    planTier: "care-plus" as const,
-    billingCycle: "monthly"
+function getPlanDisplayName(plan: BillingPlan | null) {
+  switch (plan) {
+    case BillingPlan.CARE:
+      return 'Care'
+    case BillingPlan.CARE_PLUS:
+      return 'Care+'
+    case BillingPlan.STUDIO:
+      return 'Studio'
+    default:
+      return 'No Plan'
   }
+}
 
-  const usage = {
-    storage: { used: 2.3, limit: 10, unit: "GB" },
-    seats: { used: 2, limit: 5 },
-    scheduledPosts: { used: 3, limit: 20 },
-    webhooks: { used: 1, limit: 5 }
-  }
+export default async function Settings() {
+  let billing = null;
+  let usage = null;
+  let hasOrganization = true;
 
-  const planFeatures = {
-    "care": {
-      name: "Care",
-      description: "Perfect for getting started",
-      features: {
-        scheduledPosts: false,
-        webhooks: false,
-        analytics: "basic",
-        seats: 2,
-        storage: "5GB",
-        versions: 5
-      }
-    },
-    "care-plus": {
-      name: "Care+",
-      description: "For growing portfolios",
-      features: {
-        scheduledPosts: true,
-        webhooks: true,
-        analytics: "advanced",
-        seats: 5,
-        storage: "10GB",
-        versions: 10
-      }
-    },
-    "studio": {
-      name: "Studio",
-      description: "For professional portfolios",
-      features: {
-        scheduledPosts: true,
-        webhooks: true,
-        analytics: "premium",
-        seats: 15,
-        storage: "50GB",
-        versions: 25
-      }
+  try {
+    billing = await getCurrentTenantBilling();
+    usage = await getTenantUsage(billing?.tenantId || '');
+  } catch (error) {
+    // Handle case where no organization is selected
+    if (error instanceof Error && error.message.includes('No organization selected')) {
+      hasOrganization = false;
+    } else if (error instanceof Error && error.message.includes('does not exist')) {
+      // Handle case where billing tables don't exist yet (database migration needed)
+      hasOrganization = true; // User has org, but billing tables missing
+      console.warn('Billing tables not found. Database migration may be needed:', error.message);
+    } else {
+      // Re-throw other errors
+      throw error;
     }
   }
 
-  const currentPlan = planFeatures[tenantInfo.planTier]
+  const plan = billing?.plan || null
+  const status = billing?.status || 'INACTIVE'
 
   return (
     <CmsLayout>
@@ -89,321 +65,192 @@ export default function Settings() {
           </p>
         </div>
 
-        {/* Tenant Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5" />
-              Tenant Information
-            </CardTitle>
-            <CardDescription>
-              Your portfolio site details
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Tenant Name</label>
-                <p className="text-lg font-semibold">{tenantInfo.name}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Primary Domain</label>
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-muted-foreground" />
-                  <p className="text-lg font-semibold">{tenantInfo.domain}</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Organization Setup Required */}
+        {!hasOrganization && (
+          <OrganizationSetup />
+        )}
 
-        {/* Plan & Billing */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Crown className="h-5 w-5" />
-              Plan & Billing
-            </CardTitle>
-            <CardDescription>
-              Current plan details and billing information
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xl font-semibold">{currentPlan.name}</h3>
-                  <Badge variant="secondary">{tenantInfo.billingCycle}</Badge>
+        {/* Database Migration Required */}
+        {hasOrganization && !billing && (
+          <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                <Settings className="h-5 w-5" />
+                Database Setup Required
+              </CardTitle>
+              <CardDescription className="text-blue-700 dark:text-blue-300">
+                Your organization is set up, but the billing tables need to be created.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  The database migration needs to be run to create the billing tables. 
+                  Please run the following command in your terminal:
+                </p>
+                <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
+                  <code className="text-sm">
+                    cd apps/cms && npx prisma migrate deploy
+                  </code>
                 </div>
-                <p className="text-muted-foreground">{currentPlan.description}</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">
+                  Make sure your database server is running before executing this command.
+                </p>
               </div>
-              <Button>
-                <CreditCard className="mr-2 h-4 w-4" />
-                Open Billing
-                <ExternalLink className="ml-2 h-3 w-3" />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Quick Overview - Only show when organization exists */}
+        {hasOrganization && (
+          <>
+            <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Current Plan</CardTitle>
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{getPlanDisplayName(plan)}</div>
+              <p className="text-xs text-muted-foreground">
+                Status: {status}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Storage Used</CardTitle>
+              <HardDrive className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {usage ? (usage.mediaBytes / 1024 / 1024 / 1024).toFixed(1) : '0.0'} GB
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {plan === BillingPlan.CARE ? 'Limit: 5GB' : plan === BillingPlan.CARE_PLUS ? 'Limit: 25GB' : 'Limit: 100GB'}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Team Members</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{usage ? usage.seats : 1}</div>
+              <p className="text-xs text-muted-foreground">
+                {plan === BillingPlan.CARE ? 'Limit: 2' : plan === BillingPlan.CARE_PLUS ? 'Limit: 5' : 'Limit: 20'}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Settings Sections */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Billing & Usage */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Billing & Usage
+              </CardTitle>
+              <CardDescription>
+                Manage your subscription and view usage details
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Current Plan</span>
+                  <Badge variant="outline">{getPlanDisplayName(plan)}</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Status</span>
+                  <Badge variant={status === 'ACTIVE' ? 'default' : 'secondary'}>
+                    {status}
+                  </Badge>
+                </div>
+              </div>
+              <Button asChild className="w-full">
+                <Link href="/settings/billing">
+                  View Billing Details
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Link>
               </Button>
-            </div>
+            </CardContent>
+          </Card>
 
-            <Separator />
-
-            {/* Usage Meters */}
-            <div className="space-y-4">
-              <h4 className="font-medium">Usage</h4>
-              
-              {/* Storage Usage */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <HardDrive className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Storage</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="h-3 w-3 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Media files, images, and documents</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {usage.storage.used} / {usage.storage.limit} {usage.storage.unit}
-                  </span>
+          {/* Content Overview */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Content Overview
+              </CardTitle>
+              <CardDescription>
+                Your current content and usage statistics
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Pages</div>
+                  <div className="text-2xl font-bold">{usage ? usage.pages : 0}</div>
                 </div>
-                <Progress 
-                  value={(usage.storage.used / usage.storage.limit) * 100} 
-                  className="h-2"
-                />
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Items</div>
+                  <div className="text-2xl font-bold">{usage ? usage.items : 0}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Collections</div>
+                  <div className="text-2xl font-bold">{usage ? usage.collections : 0}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Media Files</div>
+                  <div className="text-2xl font-bold">
+                    {usage ? Math.round(usage.mediaBytes / 1024 / 1024) : 0} MB
+                  </div>
+                </div>
               </div>
+            </CardContent>
+          </Card>
+        </div>
 
-              {/* Seats Usage */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Team Seats</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="h-3 w-3 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Number of team members who can access the CMS</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {usage.seats.used} / {usage.seats.limit}
-                  </span>
-                </div>
-                <Progress 
-                  value={(usage.seats.used / usage.seats.limit) * 100} 
-                  className="h-2"
-                />
-              </div>
-
-              {/* Scheduled Posts Usage */}
-              {currentPlan.features.scheduledPosts && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Scheduled Posts (This Month)</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Info className="h-3 w-3 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Posts scheduled to publish automatically</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {usage.scheduledPosts.used} / {usage.scheduledPosts.limit}
-                    </span>
-                  </div>
-                  <Progress 
-                    value={(usage.scheduledPosts.used / usage.scheduledPosts.limit) * 100} 
-                    className="h-2"
-                  />
-                </div>
-              )}
-
-              {/* Webhooks Usage */}
-              {currentPlan.features.webhooks && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Webhook className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">Webhooks</span>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Info className="h-3 w-3 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Automated notifications to external services</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {usage.webhooks.used} / {usage.webhooks.limit}
-                    </span>
-                  </div>
-                  <Progress 
-                    value={(usage.webhooks.used / usage.webhooks.limit) * 100} 
-                    className="h-2"
-                  />
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Feature Toggles */}
+        {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <SettingsIcon className="h-5 w-5" />
-              Feature Access
-            </CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
             <CardDescription>
-              Features available with your current plan
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-4">
-              {/* Scheduled Posts */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">Scheduled Publishing</p>
-                    <p className="text-sm text-muted-foreground">
-                      Schedule posts to publish automatically
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch 
-                    checked={currentPlan.features.scheduledPosts} 
-                    disabled={!currentPlan.features.scheduledPosts}
-                  />
-                  {!currentPlan.features.scheduledPosts && (
-                    <Badge variant="outline" className="text-xs">
-                      Care+ Required
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              {/* Webhooks */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Webhook className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">Webhooks</p>
-                    <p className="text-sm text-muted-foreground">
-                      Send notifications to external services
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch 
-                    checked={currentPlan.features.webhooks} 
-                    disabled={!currentPlan.features.webhooks}
-                  />
-                  {!currentPlan.features.webhooks && (
-                    <Badge variant="outline" className="text-xs">
-                      Care+ Required
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              {/* Analytics */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <BarChart3 className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">Analytics</p>
-                    <p className="text-sm text-muted-foreground">
-                      {currentPlan.features.analytics === "basic" && "Basic page views and traffic"}
-                      {currentPlan.features.analytics === "advanced" && "Advanced analytics with insights"}
-                      {currentPlan.features.analytics === "premium" && "Premium analytics with custom reports"}
-                    </p>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="capitalize">
-                  {currentPlan.features.analytics}
-                </Badge>
-              </div>
-
-              {/* Version History */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <SettingsIcon className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">Version History</p>
-                    <p className="text-sm text-muted-foreground">
-                      Keep {currentPlan.features.versions} versions of each content item
-                    </p>
-                  </div>
-                </div>
-                <Badge variant="secondary">
-                  {currentPlan.features.versions} versions
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Plan Comparison */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Plan Comparison</CardTitle>
-            <CardDescription>
-              Compare features across all available plans
+              Common settings and management tasks
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-3">
-              {Object.entries(planFeatures).map(([key, plan]) => (
-                <div 
-                  key={key}
-                  className={`rounded-lg border p-4 ${
-                    key === tenantInfo.planTier 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-border'
-                  }`}
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold">{plan.name}</h4>
-                      {key === tenantInfo.planTier && (
-                        <Badge>Current</Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{plan.description}</p>
-                    <ul className="space-y-1 text-sm">
-                      <li>• {plan.features.seats} team seats</li>
-                      <li>• {plan.features.storage} storage</li>
-                      <li>• {plan.features.versions} versions</li>
-                      <li>• {plan.features.scheduledPosts ? '✓' : '✗'} Scheduled posts</li>
-                      <li>• {plan.features.webhooks ? '✓' : '✗'} Webhooks</li>
-                      <li>• {plan.features.analytics} analytics</li>
-                    </ul>
-                  </div>
-                </div>
-              ))}
+              <Button variant="outline" asChild>
+                <Link href="/settings/billing">
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Manage Billing
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/collections">
+                  <Globe className="h-4 w-4 mr-2" />
+                  Manage Content
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/media">
+                  <HardDrive className="h-4 w-4 mr-2" />
+                  Manage Media
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>
+          </>
+        )}
       </div>
     </CmsLayout>
   )

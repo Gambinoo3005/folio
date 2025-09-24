@@ -135,13 +135,18 @@ export function DashboardWithStates() {
 
           {/* Main Dashboard Sections */}
           <div className="grid gap-6 md:grid-cols-2">
-            <RecentEditsSection />
+            <RecentEditsSection recentEdits={[]} />
             <QuickActionsSection />
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <UsageSection />
-            <PublishingStatusSection />
+            <UsageSection usageStats={{ 
+              pages: { total: 0, published: 0, drafts: 0 },
+              items: { total: 0, published: 0, drafts: 0 },
+              media: { total: 0, totalSize: 0 },
+              collections: { total: 0 }
+            }} />
+            <PublishingStatusSection publishingStatus={{ lastPublish: null, draftCount: 0, publishedCount: 0 }} />
           </div>
         </div>
       </DashboardLoadingWrapper>

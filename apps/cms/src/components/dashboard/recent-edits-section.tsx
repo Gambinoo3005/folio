@@ -2,20 +2,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getRecentEdits, type RecentEdit } from '@/lib/adapters/dashboard-adapters';
+import { type RecentEdit } from '@/lib/adapters/dashboard-adapters';
 import { FileText, FolderOpen, Image, Globe, Edit3 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 const getTypeIcon = (type: RecentEdit['type']) => {
   switch (type) {
     case 'page':
       return <FileText className="h-4 w-4" />;
-    case 'project':
+    case 'item':
       return <FolderOpen className="h-4 w-4" />;
-    case 'post':
-      return <Edit3 className="h-4 w-4" />;
-    case 'gallery':
-      return <Image className="h-4 w-4" />;
     case 'global':
       return <Globe className="h-4 w-4" />;
     default:
@@ -31,8 +26,6 @@ const getActionColor = (action: RecentEdit['action']) => {
       return 'bg-blue-500';
     case 'published':
       return 'bg-purple-500';
-    case 'scheduled':
-      return 'bg-orange-500';
     default:
       return 'bg-gray-500';
   }
@@ -46,8 +39,6 @@ const getActionBadgeVariant = (action: RecentEdit['action']) => {
       return 'secondary' as const;
     case 'published':
       return 'default' as const;
-    case 'scheduled':
-      return 'outline' as const;
     default:
       return 'outline' as const;
   }
@@ -71,50 +62,11 @@ const formatTimeAgo = (timestamp: Date) => {
   }
 };
 
-export function RecentEditsSection() {
-  const [recentEdits, setRecentEdits] = useState<RecentEdit[]>([]);
-  const [loading, setLoading] = useState(true);
+interface RecentEditsSectionProps {
+  recentEdits: RecentEdit[];
+}
 
-  useEffect(() => {
-    const loadRecentEdits = async () => {
-      try {
-        const edits = await getRecentEdits();
-        setRecentEdits(edits);
-      } catch (error) {
-        console.error('Failed to load recent edits:', error);
-        setRecentEdits([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadRecentEdits();
-  }, []);
-
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Edits</CardTitle>
-          <CardDescription>Your latest content updates and changes</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center space-x-4 animate-pulse">
-                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                <div className="flex-1 space-y-1">
-                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+export function RecentEditsSection({ recentEdits }: RecentEditsSectionProps) {
   return (
     <Card>
       <CardHeader>

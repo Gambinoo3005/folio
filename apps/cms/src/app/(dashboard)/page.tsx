@@ -5,8 +5,16 @@ import { RecentEditsSection } from "@/components/dashboard/recent-edits-section"
 import { QuickActionsSection } from "@/components/dashboard/quick-actions-section"
 import { UsageSection } from "@/components/dashboard/usage-section"
 import { PublishingStatusSection } from "@/components/dashboard/publishing-status-section"
+import { getRecentEdits, getUsageStats, getPublishingStatus } from "@/lib/adapters/dashboard-adapters"
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  // Fetch all dashboard data on the server
+  const [recentEdits, usageStats, publishingStatus] = await Promise.all([
+    getRecentEdits(),
+    getUsageStats(),
+    getPublishingStatus(),
+  ])
+
   return (
     <CmsLayout>
       <div className="space-y-6">
@@ -14,11 +22,11 @@ export default function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome to your portfolio CMS. Manage your content and track your site&apos;s performance.
+            Welcome back! Here's what's happening with your content.
           </p>
         </div>
 
-        {/* Overview Stats */}
+        {/* Quick Stats */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -26,62 +34,62 @@ export default function Dashboard() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">3</div>
+              <div className="text-2xl font-bold">{usageStats.pages.total}</div>
               <p className="text-xs text-muted-foreground">
-                +1 from last month
+                {usageStats.pages.published} published, {usageStats.pages.drafts} drafts
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Projects</CardTitle>
+              <CardTitle className="text-sm font-medium">Collections</CardTitle>
               <FolderOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
+              <div className="text-2xl font-bold">{usageStats.collections.total}</div>
               <p className="text-xs text-muted-foreground">
-                +3 from last month
+                {usageStats.items.total} total items
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Media Files</CardTitle>
+              <CardTitle className="text-sm font-medium">Media</CardTitle>
               <Image className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">45</div>
+              <div className="text-2xl font-bold">{usageStats.media.total}</div>
               <p className="text-xs text-muted-foreground">
-                +8 from last month
+                {(usageStats.media.totalSize / 1024 / 1024).toFixed(1)} MB used
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Page Views</CardTitle>
+              <CardTitle className="text-sm font-medium">Published</CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">2,350</div>
+              <div className="text-2xl font-bold">{publishingStatus.publishedCount}</div>
               <p className="text-xs text-muted-foreground">
-                +180 from last month
+                {publishingStatus.draftCount} drafts pending
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Dashboard Sections */}
+        {/* Dashboard Sections */}
         <div className="grid gap-6 md:grid-cols-2">
-          <RecentEditsSection />
-          <QuickActionsSection />
+          <RecentEditsSection recentEdits={recentEdits} />
+          <PublishingStatusSection publishingStatus={publishingStatus} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <UsageSection />
-          <PublishingStatusSection />
+          <UsageSection usageStats={usageStats} />
+          <QuickActionsSection />
         </div>
       </div>
     </CmsLayout>

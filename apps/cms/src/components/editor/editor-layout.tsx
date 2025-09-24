@@ -32,6 +32,8 @@ import { SettingsTab } from './settings-tab';
 import { ChecklistButton } from './checklist-button';
 import { ChecklistDialog } from './checklist-dialog';
 import { PreviewPanel } from './preview-panel';
+import { PreviewButton } from './preview-button';
+import { PreviewIndicator } from './preview-indicator';
 
 interface EditorLayoutProps {
   title?: string;
@@ -40,6 +42,10 @@ interface EditorLayoutProps {
   onPublish?: () => void;
   onPreview?: () => void;
   onBack?: () => void;
+  // Preview mode props
+  previewTarget?: 'page' | 'item';
+  previewId?: string;
+  previewSlug?: string;
 }
 
 export function EditorLayout({
@@ -48,7 +54,10 @@ export function EditorLayout({
   onSave,
   onPublish,
   onPreview,
-  onBack
+  onBack,
+  previewTarget,
+  previewId,
+  previewSlug
 }: EditorLayoutProps) {
   const [activeTab, setActiveTab] = useState('content');
   const [activeContentSubcategory, setActiveContentSubcategory] = useState('basic');
@@ -159,6 +168,9 @@ export function EditorLayout({
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Preview Indicator */}
+              <PreviewIndicator />
+              
               {/* Autosave Indicator */}
               <motion.div 
                 initial={{ opacity: 0, x: 10 }}
@@ -203,6 +215,16 @@ export function EditorLayout({
                   </Button>
                 </motion.div>
                 
+                {/* Preview Button */}
+                {previewTarget && previewId && (
+                  <PreviewButton
+                    target={previewTarget}
+                    id={previewId}
+                    slug={previewSlug}
+                  />
+                )}
+                
+                {/* Local Preview Toggle */}
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -214,7 +236,7 @@ export function EditorLayout({
                     className="border-border/50 hover:bg-brand-accent/10 hover:border-brand-accent/50"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    {showPreview ? 'Hide' : 'Preview'}
+                    {showPreview ? 'Hide' : 'Local Preview'}
                   </Button>
                 </motion.div>
 

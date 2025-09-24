@@ -1,55 +1,66 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { 
-  Image, 
-  Video, 
+  Image as ImageIcon, 
   File, 
-  MoreHorizontal, 
   Eye, 
-  Download,
+  Edit, 
   Trash2,
-  Edit
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+  Download,
+  MoreVertical
+} from 'lucide-react'
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { MediaDetailDrawer } from './media-detail-drawer'
+import { cn } from '@/lib/utils'
 
 export interface MediaItem {
   id: string
+  kind: 'IMAGE' | 'FILE'
   filename: string
-  type: 'image' | 'video' | 'document'
+  mime: string
   size: number
-  dimensions?: {
-    width: number
-    height: number
-  }
-  createdAt: Date
-  altText?: string
-  focalPoint?: {
-    x: number
-    y: number
-  }
-  url: string
+  width?: number
+  height?: number
+  cfImageId?: string
+  r2Key?: string
+  alt?: string
+  focalX?: number
+  focalY?: number
+  deliveryUrl: string
+  thumbnailUrl?: string
+  createdAt: string
+  updatedAt: string
 }
 
 interface MediaGridProps {
-  items: MediaItem[]
-  onItemClick: (item: MediaItem) => void
-  onEdit: (item: MediaItem) => void
-  onDelete: (item: MediaItem) => void
-  viewMode: 'grid' | 'list'
+  media: MediaItem[]
+  onEdit?: (media: MediaItem) => void
+  onDelete?: (media: MediaItem) => void
+  onView?: (media: MediaItem) => void
+  viewMode?: 'grid' | 'list'
+  className?: string
 }
 
 export function MediaGrid({ 
-  items, 
-  onItemClick, 
+  media, 
   onEdit, 
   onDelete, 
-  viewMode 
+  onView,
+  viewMode = 'grid',
+  className 
 }: MediaGridProps) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'
@@ -59,179 +70,202 @@ export function MediaGrid({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(date)
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString()
   }
 
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case 'image':
-        return <Image className="h-4 w-4" />
-      case 'video':
-        return <Video className="h-4 w-4" />
-      default:
-        return <File className="h-4 w-4" />
-    }
+  const handleView = (media: MediaItem) => {
+    setSelectedMedia(media)
+    setIsDetailOpen(true)
+    onView?.(media)
   }
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'image':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-      case 'video':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
-    }
+  const handleEdit = (media: MediaItem) => {
+    setSelectedMedia(media)
+    setIsDetailOpen(true)
+    onEdit?.(media)
+  }
+
+  const handleDelete = (media: MediaItem) => {
+    onDelete?.(media)
   }
 
   if (viewMode === 'list') {
     return (
-      <div className="space-y-2">
-        {items.map((item) => (
-          <Card 
-            key={item.id} 
-            className="cursor-pointer hover:bg-accent/50 transition-colors"
-            onClick={() => onItemClick(item)}
+      <div className={cn('space-y-2', className)}>
+        {media.map((item) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-4 p-4 bg-card rounded-lg border hover:bg-muted/50 transition-colors"
           >
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  {item.type === 'image' ? (
-                    <div className="w-12 h-12 bg-muted rounded-md flex items-center justify-center overflow-hidden">
-                      <img 
-                        src={item.url} 
-                        alt={item.altText || item.filename}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+            {/* Thumbnail */}
+            <div className="flex-shrink-0">
+              {item.kind === 'IMAGE' && item.thumbnailUrl ? (
+                <img
+                  src={item.thumbnailUrl}
+                  alt={item.alt || item.filename}
+                  className="w-12 h-12 object-cover rounded"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
+                  {item.kind === 'IMAGE' ? (
+                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
                   ) : (
-                    <div className="w-12 h-12 bg-muted rounded-md flex items-center justify-center">
-                      {getFileIcon(item.type)}
-                    </div>
+                    <File className="h-6 w-6 text-muted-foreground" />
                   )}
                 </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2">
-                    <p className="text-sm font-medium truncate">{item.filename}</p>
-                    <Badge variant="secondary" className={cn("text-xs", getTypeColor(item.type))}>
-                      {item.type}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-1">
-                    <span>{formatFileSize(item.size)}</span>
-                    {item.dimensions && (
-                      <span>{item.dimensions.width} × {item.dimensions.height}</span>
-                    )}
-                    <span>{formatDate(item.createdAt)}</span>
-                  </div>
-                </div>
+              )}
+            </div>
 
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onEdit(item)
-                    }}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onDelete(item)
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+            {/* File Info */}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium truncate">{item.filename}</h3>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Badge variant="secondary" className="text-xs">
+                  {item.kind}
+                </Badge>
+                <span>{formatFileSize(item.size)}</span>
+                {item.width && item.height && (
+                  <span>{item.width} × {item.height}</span>
+                )}
+                <span>{formatDate(item.createdAt)}</span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleView(item)}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleEdit(item)}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.open(item.deliveryUrl, '_blank')}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleDelete(item)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </motion.div>
         ))}
+
+        {/* Detail Drawer */}
+        <MediaDetailDrawer
+          media={selectedMedia}
+          isOpen={isDetailOpen}
+          onClose={() => setIsDetailOpen(false)}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-      {items.map((item) => (
-        <Card 
-          key={item.id} 
-          className="cursor-pointer hover:shadow-md transition-shadow group"
-          onClick={() => onItemClick(item)}
+    <div className={cn('grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4', className)}>
+      {media.map((item) => (
+        <motion.div
+          key={item.id}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.02 }}
+          className="group"
         >
-          <CardContent className="p-2">
-            <div className="relative">
-              {item.type === 'image' ? (
-                <div className="aspect-square bg-muted rounded-md overflow-hidden">
-                  <img 
-                    src={item.url} 
-                    alt={item.altText || item.filename}
+          <Card className="overflow-hidden hover:shadow-md transition-shadow">
+            <CardContent className="p-0">
+              {/* Thumbnail */}
+              <div className="aspect-square relative overflow-hidden">
+                {item.kind === 'IMAGE' && item.thumbnailUrl ? (
+                  <img
+                    src={item.thumbnailUrl}
+                    alt={item.alt || item.filename}
                     className="w-full h-full object-cover"
                   />
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    {item.kind === 'IMAGE' ? (
+                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                    ) : (
+                      <File className="h-8 w-8 text-muted-foreground" />
+                    )}
+                  </div>
+                )}
+
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleView(item)}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
                 </div>
-              ) : (
-                <div className="aspect-square bg-muted rounded-md flex items-center justify-center">
-                  {getFileIcon(item.type)}
-                </div>
-              )}
-              
-              {/* Overlay with actions */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center space-x-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onItemClick(item)
-                  }}
+
+                {/* Kind Badge */}
+                <Badge 
+                  variant="secondary" 
+                  className="absolute top-2 left-2 text-xs"
                 >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onEdit(item)
-                  }}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="mt-2 space-y-1">
-              <p className="text-xs font-medium truncate" title={item.filename}>
-                {item.filename}
-              </p>
-              <div className="flex items-center justify-between">
-                <Badge variant="secondary" className={cn("text-xs", getTypeColor(item.type))}>
-                  {item.type}
+                  {item.kind}
                 </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {formatFileSize(item.size)}
-                </span>
               </div>
-              {item.dimensions && (
-                <p className="text-xs text-muted-foreground">
-                  {item.dimensions.width} × {item.dimensions.height}
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+
+              {/* File Info */}
+              <div className="p-3">
+                <h3 className="font-medium text-sm truncate mb-1">
+                  {item.filename}
+                </h3>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <div>{formatFileSize(item.size)}</div>
+                  {item.width && item.height && (
+                    <div>{item.width} × {item.height}</div>
+                  )}
+                  <div>{formatDate(item.createdAt)}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       ))}
+
+      {/* Detail Drawer */}
+      <MediaDetailDrawer
+        media={selectedMedia}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
     </div>
   )
 }

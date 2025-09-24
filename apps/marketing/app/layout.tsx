@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   title: "Portfolio CMS - Bespoke portfolio websites with built-in CMS",
   description: "Custom full-stack builds tailored to your craft—fast, secure, and effortless to update.",
   generator: "Portfolio CMS",
+  viewport: "width=device-width, initial-scale=1",
   openGraph: {
     title: "Portfolio CMS - Bespoke portfolio websites with built-in CMS",
     description: "Custom full-stack builds tailored to your craft—fast, secure, and effortless to update.",

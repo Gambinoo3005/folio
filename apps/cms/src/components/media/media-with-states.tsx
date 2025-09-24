@@ -18,63 +18,90 @@ import { cmsToasts } from "@/lib/toast"
 const mockMediaItems: MediaItem[] = [
   {
     id: "1",
+    kind: "IMAGE",
     filename: "hero-image.jpg",
-    type: "image",
+    mime: "image/jpeg",
     size: 2048576, // 2MB
-    dimensions: { width: 1920, height: 1080 },
-    createdAt: new Date("2024-01-15T10:30:00Z"),
-    altText: "Beautiful landscape with mountains and lake",
-    focalPoint: { x: 50, y: 30 },
-    url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop"
+    width: 1920,
+    height: 1080,
+    createdAt: "2024-01-15T10:30:00Z",
+    updatedAt: "2024-01-15T10:30:00Z",
+    alt: "Beautiful landscape with mountains and lake",
+    cfImageId: "cf-image-1",
+    r2Key: "media/hero-image.jpg",
+    deliveryUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop",
+    focalX: 50,
+    focalY: 30
   },
   {
     id: "2",
+    kind: "IMAGE",
     filename: "portfolio-project-1.png",
-    type: "image",
+    mime: "image/png",
     size: 1536000, // 1.5MB
-    dimensions: { width: 1200, height: 800 },
-    createdAt: new Date("2024-01-14T15:45:00Z"),
-    altText: "Screenshot of a modern web application dashboard",
-    focalPoint: { x: 40, y: 60 },
-    url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=800&fit=crop"
+    width: 1200,
+    height: 800,
+    createdAt: "2024-01-14T15:45:00Z",
+    updatedAt: "2024-01-14T15:45:00Z",
+    alt: "Screenshot of a modern web application dashboard",
+    cfImageId: "cf-image-2",
+    r2Key: "media/portfolio-project-1.png",
+    deliveryUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=800&fit=crop",
+    focalX: 40,
+    focalY: 60
   },
   {
     id: "3",
+    kind: "FILE",
     filename: "demo-video.mp4",
-    type: "video",
+    mime: "video/mp4",
     size: 15728640, // 15MB
-    createdAt: new Date("2024-01-13T09:20:00Z"),
-    altText: "Product demonstration video showing key features",
-    url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
+    createdAt: "2024-01-13T09:20:00Z",
+    updatedAt: "2024-01-13T09:20:00Z",
+    alt: "Product demonstration video showing key features",
+    r2Key: "media/demo-video.mp4",
+    deliveryUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
   },
   {
     id: "4",
+    kind: "FILE",
     filename: "resume.pdf",
-    type: "document",
+    mime: "application/pdf",
     size: 512000, // 512KB
-    createdAt: new Date("2024-01-12T14:15:00Z"),
-    altText: "Professional resume document",
-    url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    createdAt: "2024-01-12T14:15:00Z",
+    updatedAt: "2024-01-12T14:15:00Z",
+    alt: "Professional resume document",
+    r2Key: "media/resume.pdf",
+    deliveryUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
   },
   {
     id: "5",
+    kind: "IMAGE",
     filename: "team-photo.jpg",
-    type: "image",
+    mime: "image/jpeg",
     size: 3072000, // 3MB
-    dimensions: { width: 1600, height: 1200 },
-    createdAt: new Date("2024-01-11T11:30:00Z"),
-    altText: "Team photo from company retreat",
-    focalPoint: { x: 50, y: 50 },
-    url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&h=1200&fit=crop"
+    width: 1600,
+    height: 1200,
+    createdAt: "2024-01-11T11:30:00Z",
+    updatedAt: "2024-01-11T11:30:00Z",
+    alt: "Team photo from company retreat",
+    cfImageId: "cf-image-5",
+    r2Key: "media/team-photo.jpg",
+    deliveryUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&h=1200&fit=crop",
+    focalX: 50,
+    focalY: 50
   },
   {
     id: "6",
+    kind: "FILE",
     filename: "presentation-slides.pdf",
-    type: "document",
+    mime: "application/pdf",
     size: 2048000, // 2MB
-    createdAt: new Date("2024-01-10T16:00:00Z"),
-    altText: "Quarterly business review presentation slides",
-    url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    createdAt: "2024-01-10T16:00:00Z",
+    updatedAt: "2024-01-10T16:00:00Z",
+    alt: "Quarterly business review presentation slides",
+    r2Key: "media/presentation-slides.pdf",
+    deliveryUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
   }
 ]
 
@@ -159,7 +186,7 @@ export function MediaWithStates() {
       }
 
       // Type filter
-      if (filters.type && item.type !== filters.type) {
+      if (filters.type && item.kind !== filters.type) {
         return false
       }
 
@@ -182,7 +209,7 @@ export function MediaWithStates() {
       // Date range filter
       if (filters.dateRange) {
         const now = new Date()
-        const itemDate = item.createdAt
+        const itemDate = new Date(item.createdAt)
         const daysDiff = Math.floor((now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24))
         
         switch (filters.dateRange) {
@@ -216,9 +243,9 @@ export function MediaWithStates() {
       }
     }
     
-    const images = data.mediaItems.filter((item: MediaItem) => item.type === 'image')
-    const videos = data.mediaItems.filter((item: MediaItem) => item.type === 'video')
-    const documents = data.mediaItems.filter((item: MediaItem) => item.type === 'document')
+    const images = data.mediaItems.filter((item: MediaItem) => item.kind === 'IMAGE')
+    const videos = data.mediaItems.filter((item: MediaItem) => item.mime.startsWith('video/'))
+    const documents = data.mediaItems.filter((item: MediaItem) => item.mime.startsWith('application/'))
     
     const totalSize = data.mediaItems.reduce((sum: number, item: MediaItem) => sum + item.size, 0)
     const imageSize = images.reduce((sum: number, item: MediaItem) => sum + item.size, 0)
@@ -375,8 +402,8 @@ export function MediaWithStates() {
 
               {filteredItems.length > 0 ? (
                 <MediaGrid
-                  items={filteredItems}
-                  onItemClick={handleItemClick}
+                  media={filteredItems}
+                  onView={handleItemClick}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   viewMode={viewMode}
@@ -405,9 +432,9 @@ export function MediaWithStates() {
 
           {/* Detail Drawer */}
           <MediaDetailDrawer
-            item={selectedItem}
-            open={detailDrawerOpen}
-            onOpenChange={setDetailDrawerOpen}
+            media={selectedItem}
+            isOpen={detailDrawerOpen}
+            onClose={() => setDetailDrawerOpen(false)}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

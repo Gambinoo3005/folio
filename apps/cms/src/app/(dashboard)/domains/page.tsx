@@ -20,8 +20,11 @@ import {
   Zap
 } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useState } from "react"
 
 export default function Domains() {
+  const [checkingDomains, setCheckingDomains] = useState<Set<string>>(new Set())
+  const [lastCheckResults, setLastCheckResults] = useState<Record<string, any>>({})
   // Mock data - in real app this would come from API
   const domains = [
     {
@@ -112,6 +115,52 @@ export default function Domains() {
     // In a real app, you'd show a toast notification here
   }
 
+  const checkDomain = async (domainName: string) => {
+    setCheckingDomains(prev => new Set(prev).add(domainName))
+    
+    try {
+      const response = await fetch('/api/v1/domains/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ domain: domainName }),
+      })
+      
+      const result = await response.json()
+      
+      if (response.ok) {
+        setLastCheckResults(prev => ({
+          ...prev,
+          [domainName]: {
+            ...result.data,
+            checkedAt: new Date().toISOString(),
+          }
+        }))
+        // In a real app, you'd show a success toast here
+        console.log('Domain check completed:', result.data)
+      } else {
+        console.error('Domain check failed:', result.error)
+        // In a real app, you'd show an error toast here
+      }
+    } catch (error) {
+      console.error('Domain check error:', error)
+      // In a real app, you'd show an error toast here
+    } finally {
+      setCheckingDomains(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(domainName)
+        return newSet
+      })
+    }
+  }
+
+  const checkAllDomains = async () => {
+    for (const domain of domains) {
+      await checkDomain(domain.name)
+    }
+  }
+
   return (
     <CmsLayout>
       <div className="space-y-6">
@@ -196,9 +245,14 @@ export default function Domains() {
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </Button>
-                  <Button variant="outline" size="sm">
-                    <RefreshCw className="mr-2 h-4 w-4" />
-                    Re-check
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => checkDomain(domain.name)}
+                    disabled={checkingDomains.has(domain.name)}
+                  >
+                    <RefreshCw className={`mr-2 h-4 w-4 ${checkingDomains.has(domain.name) ? 'animate-spin' : ''}`} />
+                    {checkingDomains.has(domain.name) ? 'Checking...' : 'Re-check'}
                   </Button>
                   <Button variant="outline" size="sm">
                     <ExternalLink className="mr-2 h-4 w-4" />
@@ -286,9 +340,13 @@ export default function Domains() {
                     Overall domain verification progress
                   </p>
                 </div>
-                <Button variant="outline">
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Re-check All
+                <Button 
+                  variant="outline"
+                  onClick={checkAllDomains}
+                  disabled={checkingDomains.size > 0}
+                >
+                  <RefreshCw className={`mr-2 h-4 w-4 ${checkingDomains.size > 0 ? 'animate-spin' : ''}`} />
+                  {checkingDomains.size > 0 ? 'Checking...' : 'Re-check All'}
                 </Button>
               </div>
 

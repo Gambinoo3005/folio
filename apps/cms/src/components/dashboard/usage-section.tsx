@@ -2,71 +2,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { getUsageStats, type UsageStats } from '@/lib/adapters/dashboard-adapters';
+import { type UsageStats } from '@/lib/adapters/dashboard-adapters';
 import { HardDrive, Calendar, History } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
-export function UsageSection() {
-  const [usageStats, setUsageStats] = useState<UsageStats | null>(null);
-  const [loading, setLoading] = useState(true);
+interface UsageSectionProps {
+  usageStats: UsageStats;
+}
 
-  useEffect(() => {
-    const loadUsageStats = async () => {
-      try {
-        const stats = await getUsageStats();
-        setUsageStats(stats);
-      } catch (error) {
-        console.error('Failed to load usage stats:', error);
-        setUsageStats(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUsageStats();
-  }, []);
-
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Usage</CardTitle>
-          <CardDescription>Your current usage and limits</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="space-y-2 animate-pulse">
-                <div className="flex items-center justify-between">
-                  <div className="h-4 bg-gray-300 rounded w-1/3"></div>
-                  <div className="h-4 bg-gray-300 rounded w-1/4"></div>
-                </div>
-                <div className="h-2 bg-gray-300 rounded"></div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!usageStats) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Usage</CardTitle>
-          <CardDescription>Your current usage and limits</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <HardDrive className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>Unable to load usage statistics</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
+export function UsageSection({ usageStats }: UsageSectionProps) {
   return (
     <Card>
       <CardHeader>
@@ -74,7 +17,7 @@ export function UsageSection() {
         <CardDescription>Your current usage and limits</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Storage Usage */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -83,48 +26,65 @@ export function UsageSection() {
                 <span className="text-sm font-medium">Storage</span>
               </div>
               <span className="text-sm text-muted-foreground">
-                {usageStats.storageUsed.gb} GB / {usageStats.storageUsed.limit} GB
+                {(usageStats.media.totalSize / 1024 / 1024).toFixed(1)} MB
               </span>
             </div>
-            <Progress 
-              value={usageStats.storageUsed.percentage} 
-              className="h-2"
-            />
+            <Progress value={Math.min((usageStats.media.totalSize / 1024 / 1024 / 1024) * 10, 100)} className="h-2" />
             <p className="text-xs text-muted-foreground">
-              {usageStats.storageUsed.percentage}% of your storage limit used
+              {usageStats.media.total} files • 10 GB limit
             </p>
           </div>
 
-          {/* Scheduled Posts */}
+          {/* Content Counts */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Scheduled Posts</span>
+                <span className="text-sm font-medium">Content</span>
               </div>
-              <span className="text-sm text-muted-foreground">
-                {usageStats.scheduledPosts.thisMonth} this month
-              </span>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {usageStats.scheduledPosts.total} total scheduled items
-            </p>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-muted-foreground">Pages</p>
+                <p className="font-medium">{usageStats.pages.total}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Items</p>
+                <p className="font-medium">{usageStats.items.total}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Collections</p>
+                <p className="font-medium">{usageStats.collections.total}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Media</p>
+                <p className="font-medium">{usageStats.media.total}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Versions Kept */}
+          {/* Drafts vs Published */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <History className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Version History</span>
+                <span className="text-sm font-medium">Status</span>
               </div>
-              <span className="text-sm text-muted-foreground">
-                {usageStats.versionsKept.current} / {usageStats.versionsKept.limit}
-              </span>
             </div>
-            <p className="text-xs text-muted-foreground">
-              {usageStats.versionsKept.limit - usageStats.versionsKept.current} versions remaining
-            </p>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-muted-foreground">Published</p>
+                <p className="font-medium text-green-600">
+                  {usageStats.pages.published + usageStats.items.published}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Drafts</p>
+                <p className="font-medium text-orange-600">
+                  {usageStats.pages.drafts + usageStats.items.drafts}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>

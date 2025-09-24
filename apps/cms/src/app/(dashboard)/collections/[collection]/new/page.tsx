@@ -4,16 +4,23 @@ import { EditorLayout } from '@/components/editor/editor-layout';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface NewItemPageProps {
-  params: {
+  params: Promise<{
     collection: string;
-  };
+  }>;
 }
 
 export default function NewItemPage({ params }: NewItemPageProps) {
-  const { collection } = params;
+  const [collection, setCollection] = useState<string>('');
   const router = useRouter();
+
+  useEffect(() => {
+    params.then(({ collection }) => {
+      setCollection(collection);
+    });
+  }, [params]);
 
   const handleSave = async () => {
     // TODO: Implement save functionality

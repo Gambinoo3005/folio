@@ -2,6 +2,7 @@ import { CmsLayout } from "@/components/cms-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Globe, Navigation, Square, Share2 } from "lucide-react"
+import Link from "next/link"
 
 export default function Globals() {
   return (
@@ -26,8 +27,10 @@ export default function Globals() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" size="sm">
-                Edit Navigation
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/globals/navigation/edit">
+                  Edit Navigation
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -43,8 +46,10 @@ export default function Globals() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" size="sm">
-                Edit Footer
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/globals/footer/edit">
+                  Edit Footer
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -60,8 +65,10 @@ export default function Globals() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" size="sm">
-                Edit Social Links
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/globals/social/edit">
+                  Edit Social Links
+                </Link>
               </Button>
             </CardContent>
           </Card>
@@ -77,8 +84,10 @@ export default function Globals() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" size="sm">
-                Edit SEO Defaults
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/globals/seo_defaults/edit">
+                  Edit SEO Defaults
+                </Link>
               </Button>
             </CardContent>
           </Card>

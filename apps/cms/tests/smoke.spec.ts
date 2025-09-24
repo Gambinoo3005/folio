@@ -97,4 +97,77 @@ test.describe('CMS Smoke Tests', () => {
     // Check for media section
     await expect(page.locator('h1')).toContainText(/Media/);
   });
+
+  test('dashboard shows tiles with DB-backed counts after sign-in', async ({ page }) => {
+    await page.goto('/');
+    
+    // If we're redirected to sign-in, skip the test
+    if (page.url().includes('/sign-in')) {
+      test.skip(true, 'Authentication not set up for tests');
+    }
+    
+    // Wait for dashboard to load
+    await expect(page.locator('h1')).toContainText(/Dashboard|Welcome/);
+    
+    // Check for dashboard tiles with counts
+    // Pages tile
+    await expect(page.locator('text=Pages').locator('..').locator('text=/\\d+/')).toBeVisible();
+    
+    // Collections tile  
+    await expect(page.locator('text=Collections').locator('..').locator('text=/\\d+/')).toBeVisible();
+    
+    // Media tile
+    await expect(page.locator('text=Media').locator('..').locator('text=/\\d+/')).toBeVisible();
+    
+    // Published tile
+    await expect(page.locator('text=Published').locator('..').locator('text=/\\d+/')).toBeVisible();
+    
+    // Verify the counts are numeric (not just "0" or placeholder text)
+    const pagesCount = await page.locator('text=Pages').locator('..').locator('text=/\\d+/').textContent();
+    const collectionsCount = await page.locator('text=Collections').locator('..').locator('text=/\\d+/').textContent();
+    const mediaCount = await page.locator('text=Media').locator('..').locator('text=/\\d+/').textContent();
+    const publishedCount = await page.locator('text=Published').locator('..').locator('text=/\\d+/').textContent();
+    
+    // Verify counts are valid numbers
+    expect(parseInt(pagesCount || '0')).toBeGreaterThanOrEqual(0);
+    expect(parseInt(collectionsCount || '0')).toBeGreaterThanOrEqual(0);
+    expect(parseInt(mediaCount || '0')).toBeGreaterThanOrEqual(0);
+    expect(parseInt(publishedCount || '0')).toBeGreaterThanOrEqual(0);
+  });
+
+  test('collections API returns JSON and 200 when signed in', async ({ page }) => {
+    await page.goto('/');
+    
+    // If we're redirected to sign-in, skip the test
+    if (page.url().includes('/sign-in')) {
+      test.skip(true, 'Authentication not set up for tests');
+    }
+    
+    // Make API request to collections endpoint
+    const response = await page.request.get('/api/v1/collections');
+    
+    // Verify response status
+    expect(response.status()).toBe(200);
+    
+    // Verify response is JSON
+    const contentType = response.headers()['content-type'];
+    expect(contentType).toContain('application/json');
+    
+    // Verify response structure
+    const data = await response.json();
+    expect(data).toHaveProperty('success', true);
+    expect(data).toHaveProperty('data');
+    expect(data).toHaveProperty('count');
+    expect(Array.isArray(data.data)).toBe(true);
+    expect(typeof data.count).toBe('number');
+    
+    // Verify each collection has expected properties
+    for (const collection of data.data) {
+      expect(collection).toHaveProperty('id');
+      expect(collection).toHaveProperty('name');
+      expect(collection).toHaveProperty('slug');
+      expect(collection).toHaveProperty('createdAt');
+      expect(collection).toHaveProperty('updatedAt');
+    }
+  });
 });

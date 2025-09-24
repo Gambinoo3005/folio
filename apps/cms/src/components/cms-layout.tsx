@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { Topbar } from "./topbar"
 import { Sidebar } from "./sidebar"
-import { DevSessionBanner } from "./dev-session-banner"
 import { cn } from "@/lib/utils"
 
 interface CmsLayoutProps {
@@ -45,8 +44,6 @@ export function CmsLayout({ children }: CmsLayoutProps) {
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Dev Session Banner */}
-        <DevSessionBanner />
         
         <Topbar onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)} />
         

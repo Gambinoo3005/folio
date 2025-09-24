@@ -6,10 +6,326 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum Role {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum Status {
+  DRAFT
+  PUBLISHED
+}
+
+enum TargetType {
+  PAGE
+  ITEM
+  GLOBAL
+}
+
+enum Action {
+  PUBLISH
+  UNPUBLISH
+}
+
+enum MediaKind {
+  IMAGE
+  VIDEO
+  FILE
+}
+
+enum BillingPlan {
+  CARE
+  CARE_PLUS
+  STUDIO
+}
+
+enum BillingStatus {
+  INACTIVE
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  PAUSED
+}
+
+// ============================================================================
+// CORE TENANT & USER TABLES
+// ============================================================================
+
+model Tenant {
+  id        String   @id // Clerk Organization ID
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  memberships  Membership[]
+  pages        Page[]
+  collections  Collection[]
+  items        Item[]
+  globals      Global[]
+  media        Media[]
+  submissions  Submission[]
+  redirects    Redirect[]
+  publishLogs  PublishLog[]
+  billing      TenantBilling?
+  featureFlags FeatureFlags?
+  usage        TenantUsage[]
+
+  @@map("tenants")
+}
+
+model User {
+  id        String   @id // Clerk User ID
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  memberships Membership[]
+  pages       Page[]       @relation("PageUpdatedBy")
+  publishLogs PublishLog[] @relation("PublishLogActor")
+
+  @@map("users")
+}
+
+model Membership {
+  userId   String @map("user_id")
+  tenantId String @map("tenant_id")
+  role     Role
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tenantId])
+  @@map("memberships")
+}
+
+// ============================================================================
+// CONTENT TABLES
+// ============================================================================
+
+model Page {
+  id            String    @id @default(uuid())
+  tenantId      String    @map("tenant_id")
+  title         String
+  slug          String
+  status        Status    @default(DRAFT)
+  body          Json
+  seoTitle      String?   @map("seo_title")
+  seoDescription String?  @map("seo_description")
+  ogImageId     String?   @map("og_image_id")
+  publishedAt   DateTime? @map("published_at")
+  updatedBy     String?   @map("updated_by")
+  deletedAt     DateTime? @map("deleted_at")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  tenant  Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  updater User?  @relation("PageUpdatedBy", fields: [updatedBy], references: [id])
+
+  @@unique([tenantId, slug])
+  @@map("pages")
+}
+
+model Collection {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  name     String
+  slug     String
+  config   Json   // Fields definition placeholder for V1
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  items  Item[]
+
+  @@unique([tenantId, slug])
+  @@map("collections")
+}
+
+model Item {
+  id           String    @id @default(uuid())
+  tenantId     String    @map("tenant_id")
+  collectionId String    @map("collection_id")
+  title        String
+  slug         String
+  status       Status    @default(DRAFT)
+  content      Json
+  seo          Json
+  publishedAt  DateTime? @map("published_at")
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, collectionId, slug])
+  @@map("items")
+}
+
+model Global {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  key      String
+  data     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@map("globals")
+}
+
+// ============================================================================
+// MEDIA & SUBMISSIONS
+// ============================================================================
+
+model Media {
+  id        String    @id @default(uuid())
+  tenantId  String    @map("tenant_id")
+  kind      MediaKind
+  filename  String
+  mime      String
+  size      Int
+  width     Int?
+  height    Int?
+  cfImageId String?   @map("cf_image_id")
+  r2Key     String?   @map("r2_key")
+  alt       String?
+  focalX    Float?    @map("focal_x")
+  focalY    Float?    @map("focal_y")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("media")
+}
+
+model Submission {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  form      String
+  payload   Json
+  ip        String?
+  ua        String?  @map("user_agent")
+  createdAt DateTime @default(now())
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("submissions")
+}
+
+// ============================================================================
+// SEO & AUDIT
+// ============================================================================
+
+model Redirect {
+  id       String @id @default(uuid())
+  tenantId String @map("tenant_id")
+  from     String
+  to       String
+  code     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, from])
+  @@map("redirects")
+}
+
+model PublishLog {
+  id         String     @id @default(uuid())
+  tenantId   String     @map("tenant_id")
+  actorId    String?    @map("actor_id")
+  targetType TargetType @map("target_type")
+  targetId   String     @map("target_id")
+  action     Action
+  at         DateTime   @default(now())
+  notes      String?
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actor  User?  @relation("PublishLogActor", fields: [actorId], references: [id])
+
+  @@map("publish_logs")
+}
+
+// ============================================================================
+// BILLING & FEATURE FLAGS
+// ============================================================================
+
+model TenantBilling {
+  id                   String        @id @default(uuid())
+  tenantId             String        @unique @map("tenant_id")
+  stripeCustomerId     String        @map("stripe_customer_id")
+  stripeSubscriptionId String?       @map("stripe_subscription_id")
+  plan                 BillingPlan?
+  status               BillingStatus @default(INACTIVE)
+  currentPeriodEnd     DateTime?     @map("current_period_end")
+  trialEndsAt          DateTime?     @map("trial_ends_at")
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_billing")
+}
+
+model FeatureFlags {
+  id        String       @id @default(uuid())
+  tenantId  String       @unique @map("tenant_id")
+  tier      BillingPlan? // Mirrors plan from TenantBilling
+  overrides Json         @default("{}") // Manual toggles per tenant
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("feature_flags")
+}
+
+model TenantUsage {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  date         DateTime @db.Date // Bucketed by date
+  mediaBytes   BigInt   @map("media_bytes") @default(0)
+  itemsCount   Int      @map("items_count") @default(0)
+  seatsCount   Int      @map("seats_count") @default(0)
+  scheduledPosts Int    @map("scheduled_posts") @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@map("tenant_usage")
 }

@@ -97,15 +97,16 @@ export function FeaturesSection() {
         </motion.div>
 
         <Tabs defaultValue="cms" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 mb-8 bg-white/5 border border-white/10">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-8 bg-white/5 border border-white/10 h-auto">
             {features.map((feature) => (
               <TabsTrigger
                 key={feature.id}
                 value={feature.id}
-                className="data-[state=active]:bg-[#059669] data-[state=active]:text-white"
+                className="data-[state=active]:bg-[#059669] data-[state=active]:text-white text-xs sm:text-sm py-2 sm:py-3"
               >
-                <feature.icon className="h-4 w-4 mr-2" />
-                {feature.label}
+                <feature.icon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">{feature.label}</span>
+                <span className="sm:hidden">{feature.label.slice(0, 3)}</span>
               </TabsTrigger>
             ))}
           </TabsList>
