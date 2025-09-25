@@ -151,6 +151,9 @@ export async function isWithinLimit(tenantId: string, limit: keyof FeatureLimits
   // -1 means unlimited
   if (maxValue === -1) return true;
   
+  // If maxValue is a boolean, it means the feature is enabled/disabled
+  if (typeof maxValue === 'boolean') return maxValue;
+  
   return currentValue < maxValue;
 }
 

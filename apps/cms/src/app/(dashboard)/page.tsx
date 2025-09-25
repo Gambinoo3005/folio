@@ -1,5 +1,5 @@
 import { CmsLayout } from "@/components/cms-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@portfolio-building-service/ui"
 import { FileText, FolderOpen, Image, BarChart3 } from "lucide-react"
 import { RecentEditsSection } from "@/components/dashboard/recent-edits-section"
 import { QuickActionsSection } from "@/components/dashboard/quick-actions-section"

@@ -16,6 +16,9 @@ import Link from "next/link"
 import { getCurrentTenantBilling } from "@/server/actions/billing"
 import { getTenantUsage } from "@/server/features"
 import { BillingPlan } from "@prisma/client"
+import { prisma } from "@/lib/prisma"
+import { auth } from "@clerk/nextjs/server"
+import { AnalyticsSettingsForm } from "./analytics-form"
 
 function getPlanDisplayName(plan: BillingPlan | null) {
   switch (plan) {
@@ -52,6 +55,11 @@ export default async function Settings() {
     }
   }
 
+  const { orgId: tenantId } = await auth();
+  const analyticsConfig = tenantId
+    ? await prisma.tenantAnalyticsConfig.findUnique({ where: { tenantId } })
+    : null;
+
   const plan = billing?.plan || null
   const status = billing?.status || 'INACTIVE'
 
@@ -75,7 +83,7 @@ export default async function Settings() {
           <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
-                <Settings className="h-5 w-5" />
+                <SettingsIcon className="h-5 w-5" />
                 Database Setup Required
               </CardTitle>
               <CardDescription className="text-blue-700 dark:text-blue-300">
@@ -216,6 +224,8 @@ export default async function Settings() {
               </div>
             </CardContent>
           </Card>
+
+          <AnalyticsSettingsForm config={analyticsConfig} />
         </div>
 
         {/* Quick Actions */}

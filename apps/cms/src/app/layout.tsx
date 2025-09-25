@@ -1,21 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { Inter, Manrope } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@portfolio-building-service/ui";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,36 +39,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function() {
-                  try {
-                    const theme = localStorage.getItem('theme');
-                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    
-                    // Only apply dark theme if explicitly set to 'dark' or 'system' with dark preference
-                    if (theme === 'dark' || (theme === 'system' && prefersDark)) {
-                      document.documentElement.classList.add('dark');
-                    } else {
-                      // Default to light theme for all other cases
-                      document.documentElement.classList.remove('dark');
-                    }
-                  } catch (e) {
-                    // Fallback to light theme if there's any error
-                    document.documentElement.classList.remove('dark');
-                  }
-                })();
-              `,
-            }}
-          />
-        </head>
-        <body className={`font-sans ${geistSans.variable} ${geistMono.variable} ${inter.variable} ${manrope.variable} antialiased`}>
+        <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} ${inter.variable} ${manrope.variable} antialiased`}>
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
-            enableSystem={true}
+            defaultTheme="dark"
+            enableSystem={false}
             disableTransitionOnChange={false}
           >
             <Suspense fallback={null}>{children}</Suspense>

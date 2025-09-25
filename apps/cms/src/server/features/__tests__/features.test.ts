@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getFeatures, hasFeature, isWithinLimit, requireFeature, requireLimit } from '../features';
+import { getFeatures, hasFeature, isWithinLimit, requireFeature, requireLimit } from '../../features';
 import { BillingPlan } from '@prisma/client';
 
 // Mock Prisma

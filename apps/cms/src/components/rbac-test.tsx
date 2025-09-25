@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '@portfolio-building-service/ui'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@portfolio-building-service/ui'
+import { Badge } from '@portfolio-building-service/ui'
 import { createPage } from '@/lib/actions/pages'
 import { createCollection } from '@/lib/actions/collections'
 import { deleteSubmission } from '@/lib/actions/submissions'

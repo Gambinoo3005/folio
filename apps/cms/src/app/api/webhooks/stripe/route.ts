@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const signature = headers().get('stripe-signature');
+  const signature = (await headers()).get('stripe-signature');
 
   if (!signature) {
     console.error('Missing stripe-signature header');
@@ -72,9 +72,9 @@ export async function POST(request: NextRequest) {
         const invoice = event.data.object as Stripe.Invoice;
         console.log('Invoice payment failed:', invoice.id);
         
-        if (invoice.subscription) {
+        if ((invoice as any).subscription && typeof (invoice as any).subscription === 'string') {
           const stripe = getStripe();
-          const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+          const subscription = await stripe.subscriptions.retrieve((invoice as any).subscription);
           await syncBillingFromStripe(subscription);
         }
         break;
@@ -84,9 +84,9 @@ export async function POST(request: NextRequest) {
         const invoice = event.data.object as Stripe.Invoice;
         console.log('Invoice payment succeeded:', invoice.id);
         
-        if (invoice.subscription) {
+        if ((invoice as any).subscription && typeof (invoice as any).subscription === 'string') {
           const stripe = getStripe();
-          const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+          const subscription = await stripe.subscriptions.retrieve((invoice as any).subscription);
           await syncBillingFromStripe(subscription);
         }
         break;

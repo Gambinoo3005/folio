@@ -1,7 +1,7 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@portfolio-building-service/ui';
+import { Progress } from '@portfolio-building-service/ui';
 import { type UsageStats } from '@/lib/adapters/dashboard-adapters';
 import { HardDrive, Calendar, History } from 'lucide-react';
 

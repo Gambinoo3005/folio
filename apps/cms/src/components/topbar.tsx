@@ -2,11 +2,11 @@
 
 import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
 import { Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Button } from "@portfolio-building-service/ui"
+import { Sheet, SheetContent, SheetTrigger } from "@portfolio-building-service/ui"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@portfolio-building-service/ui"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { MobileSidebar } from "./sidebar"
+import { Sidebar } from "./sidebar"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -89,7 +89,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
               {mounted ? (
-                <MobileSidebar />
+                <Sidebar />
               ) : (
                 <div className="flex h-full flex-col">
                   <div className="flex h-16 items-center border-b px-6">

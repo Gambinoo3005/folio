@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@portfolio-building-service/ui';
+import { Button } from '@portfolio-building-service/ui';
+import { Badge } from '@portfolio-building-service/ui';
 import { type PublishingStatus } from '@/lib/adapters/dashboard-adapters';
 import { Clock, CheckCircle, FileText, Activity, Calendar } from 'lucide-react';
 import Link from 'next/link';

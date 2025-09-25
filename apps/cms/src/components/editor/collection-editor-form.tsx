@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@portfolio-building-service/ui'
+import { Input } from '@portfolio-building-service/ui'
+import { Textarea } from '@portfolio-building-service/ui'
+import { Button } from '@portfolio-building-service/ui'
+import { Badge } from '@portfolio-building-service/ui'
 import { 
   Form,
   FormControl,
@@ -17,7 +17,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from '@portfolio-building-service/ui'
 import { 
   FolderOpen, 
   Search,

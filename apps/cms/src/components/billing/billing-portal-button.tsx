@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@portfolio-building-service/ui';
 import { ExternalLink } from 'lucide-react';
 import { openCustomerPortal } from '@/server/actions/billing';
 

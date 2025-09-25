@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { PrismaClient } from '@prisma/client'
 import { getValidatedTenantId } from '@/lib/tenant'
-import { PageEditorLayout } from '@/components/editor/page-editor-layout'
+import { UnifiedEditor } from '@/components/editor/unified-editor'
 
 const prisma = new PrismaClient()
 
@@ -29,7 +29,8 @@ export default async function EditPage({ params }: EditPageProps) {
   }
 
   return (
-    <PageEditorLayout 
+    <UnifiedEditor 
+      contentType="page"
       mode="edit"
       initialData={{
         id: page.id,

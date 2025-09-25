@@ -1,7 +1,7 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@portfolio-building-service/ui';
+import { Badge } from '@portfolio-building-service/ui';
 import { type RecentEdit } from '@/lib/adapters/dashboard-adapters';
 import { FileText, FolderOpen, Image, Globe, Edit3 } from 'lucide-react';
 

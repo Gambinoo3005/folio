@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@portfolio-building-service/ui'
+import { Input } from '@portfolio-building-service/ui'
+import { Label } from '@portfolio-building-service/ui'
+import { Textarea } from '@portfolio-building-service/ui'
+import { Badge } from '@portfolio-building-service/ui'
+import { Separator } from '@portfolio-building-service/ui'
 import { 
   X, 
   Download, 

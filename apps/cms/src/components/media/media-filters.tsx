@@ -1,16 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Input } from "@portfolio-building-service/ui"
+import { Button } from "@portfolio-building-service/ui"
+import { Badge } from "@portfolio-building-service/ui"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@portfolio-building-service/ui"
 import { 
   Search, 
   Filter, 

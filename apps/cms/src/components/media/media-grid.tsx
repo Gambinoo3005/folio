@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@portfolio-building-service/ui'
+import { Button } from '@portfolio-building-service/ui'
+import { Badge } from '@portfolio-building-service/ui'
 import { 
   Image as ImageIcon, 
   File, 
@@ -19,7 +19,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@portfolio-building-service/ui'
 import { MediaDetailDrawer } from './media-detail-drawer'
 import { cn } from '@/lib/utils'
 

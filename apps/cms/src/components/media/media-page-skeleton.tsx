@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent, CardHeader } from '@portfolio-building-service/ui'
+import { Skeleton } from '@portfolio-building-service/ui'
 
 export function MediaPageSkeleton() {
   return (

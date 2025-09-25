@@ -3,9 +3,12 @@
 import { useState, useEffect } from "react"
 import { Topbar } from "./topbar"
 import { Sidebar } from "./sidebar"
-import { cn } from "@/lib/utils"
 
 interface CmsLayoutProps {
+  children: React.ReactNode
+}
+
+interface CmsLayoutEmptyProps {
   children: React.ReactNode
 }
 
@@ -47,6 +50,24 @@ export function CmsLayout({ children }: CmsLayoutProps) {
         
         <Topbar onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)} />
         
+        <main 
+          id="main-content"
+          className="flex-1 overflow-auto p-6 focus:outline-none"
+          tabIndex={-1}
+        >
+          <div className="mx-auto max-w-7xl">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  )
+}
+
+export function CmsLayoutEmpty({ children }: CmsLayoutEmptyProps) {
+  return (
+    <div className="flex h-screen bg-background">
+      <div className="flex flex-1 flex-col overflow-hidden">
         <main 
           id="main-content"
           className="flex-1 overflow-auto p-6 focus:outline-none"

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@portfolio-building-service/ui"
 import { LoadingState } from "@/components/ui/empty-states"
 import { ErrorState } from "@/components/ui/empty-states"
 

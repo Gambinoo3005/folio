@@ -1,5 +1,6 @@
 import { inngest } from './client';
 import { prisma } from '@/lib/prisma';
+import { checkDomain } from '@/server/actions/domain';
 
 /**
  * Nightly job to compute and store usage metrics for all tenants
@@ -255,7 +256,7 @@ export const checkUsageLimits = inngest.createFunction(
             type: 'storage',
             current: latestUsage.mediaBytes,
             limit: planLimits.maxStorageBytes,
-            percentage: (latestUsage.mediaBytes / planLimits.maxStorageBytes) * 100,
+            percentage: Number(latestUsage.mediaBytes) / Number(planLimits.maxStorageBytes) * 100,
           });
         }
 
@@ -276,5 +277,29 @@ export const checkUsageLimits = inngest.createFunction(
     }
 
     return { checkedTenants: tenants.length };
+  }
+);
+
+export const checkPendingDomains = inngest.createFunction(
+  { id: 'check-pending-domains-cron' },
+  { cron: '*/15 * * * *' }, // Every 15 minutes
+  async () => {
+    const domainsToCHeck = await prisma.domain.findMany({
+      where: {
+        OR: [{ status: 'NEEDS_DNS' }, { status: 'VERIFYING' }],
+      },
+    });
+
+    for (const domain of domainsToCHeck) {
+      try {
+        await checkDomain(domain.tenantId, domain.id);
+      } catch (error) {
+        console.error(`Failed to check domain ${domain.hostname}:`, error);
+      }
+    }
+
+    return {
+      message: `Checked ${domainsToCHeck.length} domains.`,
+    };
   }
 );

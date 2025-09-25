@@ -9,13 +9,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+} from "@portfolio-building-service/ui"
+import { Button } from "@portfolio-building-service/ui"
+import { Input } from "@portfolio-building-service/ui"
+import { Label } from "@portfolio-building-service/ui"
+import { Textarea } from "@portfolio-building-service/ui"
+import { Progress } from "@portfolio-building-service/ui"
+import { Badge } from "@portfolio-building-service/ui"
 import { 
   Upload, 
   X, 

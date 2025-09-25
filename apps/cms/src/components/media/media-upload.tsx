@@ -2,9 +2,9 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@portfolio-building-service/ui'
+import { Progress } from '@portfolio-building-service/ui'
+import { Card, CardContent } from '@portfolio-building-service/ui'
 import { 
   Upload, 
   X, 

@@ -63,7 +63,7 @@ export default async function Collections() {
                         </Link>
                       </Button>
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={`/collections/${collection.id}/items/new`}>
+                        <Link href={`/collections/${collection.slug}/items/new`}>
                           Add New
                         </Link>
                       </Button>

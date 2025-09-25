@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
+import { Button } from '@portfolio-building-service/ui'
 import { Eye, EyeOff } from 'lucide-react'
 import { usePreviewMode } from '@/hooks/use-preview-mode'
 

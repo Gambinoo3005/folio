@@ -1,8 +1,8 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@portfolio-building-service/ui"
+import { Separator } from "@portfolio-building-service/ui"
 import { 
   LayoutDashboard, 
   FileText, 
@@ -175,52 +175,5 @@ export function Sidebar({ isCollapsed = false, className }: SidebarProps) {
         </div>
       </div>
     </aside>
-  )
-}
-
-// Mobile sidebar component
-export function MobileSidebar() {
-  const pathname = usePathname()
-
-  return (
-    <div className="flex h-full flex-col border-r bg-sidebar" role="navigation" aria-label="Mobile navigation">
-      {/* Mobile Sidebar Header */}
-      <div className="flex h-16 items-center border-b px-6">
-        <span className="text-xl font-bold text-brand-accent">Folio</span>
-      </div>
-
-      {/* Mobile Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
-        {navigationItems.map((item) => {
-          const isActive = pathname === item.href
-          const Icon = item.icon
-
-          return (
-            <Button
-              key={item.href}
-              variant={isActive ? "secondary" : "ghost"}
-              className={cn(
-                "w-full justify-start",
-                isActive && "bg-sidebar-accent text-sidebar-accent-foreground"
-              )}
-              asChild
-              aria-current={isActive ? "page" : undefined}
-            >
-              <Link href={item.href}>
-                <Icon className="mr-3 h-4 w-4" aria-hidden="true" />
-                {item.title}
-              </Link>
-            </Button>
-          )
-        })}
-      </nav>
-
-      {/* Mobile Sidebar Footer */}
-      <div className="border-t p-4">
-        <div className="text-xs text-muted-foreground">
-          Folio CMS v1.0
-        </div>
-      </div>
-    </div>
   )
 }

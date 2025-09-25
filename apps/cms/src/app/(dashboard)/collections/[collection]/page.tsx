@@ -47,7 +47,7 @@ export default async function CollectionItemsPage({ params }: CollectionItemsPag
             </p>
           </div>
           <Button asChild>
-            <Link href={`/collections/${collection}/new`}>
+            <Link href={`/collections/${collection}/items/new`}>
               <Plus className="mr-2 h-4 w-4" />
               Add New Item
             </Link>

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { PrismaClient } from '@prisma/client'
 import { getValidatedTenantId } from '@/lib/tenant'
-import { ItemEditorLayout } from '@/components/editor/item-editor-layout'
+import { UnifiedEditor } from '@/components/editor/unified-editor'
 
 const prisma = new PrismaClient()
 
@@ -46,8 +46,10 @@ export default async function EditItem({ params }: EditItemProps) {
   }
 
   return (
-    <ItemEditorLayout 
+    <UnifiedEditor 
+      contentType="item"
       mode="edit"
+      collectionId={collectionRecord.id}
       initialData={{
         id: item.id,
         collectionId: item.collectionId,

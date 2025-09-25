@@ -1,8 +1,9 @@
-import { PageEditorLayout } from '@/components/editor/page-editor-layout'
+import { UnifiedEditor } from '@/components/editor/unified-editor'
 
 export default function NewPage() {
   return (
-    <PageEditorLayout 
+    <UnifiedEditor 
+      contentType="page"
       mode="create"
       initialData={{
         title: '',

@@ -60,6 +60,24 @@ enum BillingStatus {
   PAUSED
 }
 
+enum DomainStatus {
+  PENDING
+  NEEDS_DNS
+  VERIFYING
+  VERIFIED
+  ASSIGNED
+  ERROR
+}
+
+enum VerificationType {
+  CNAME
+  TXT
+}
+
+enum AnalyticsSource {
+  PLAUSIBLE
+}
+
 // ============================================================================
 // CORE TENANT & USER TABLES
 // ============================================================================
@@ -71,18 +89,24 @@ model Tenant {
   updatedAt DateTime @updatedAt
 
   // Relations
-  memberships  Membership[]
-  pages        Page[]
-  collections  Collection[]
-  items        Item[]
-  globals      Global[]
-  media        Media[]
-  submissions  Submission[]
-  redirects    Redirect[]
-  publishLogs  PublishLog[]
-  billing      TenantBilling?
-  featureFlags FeatureFlags?
-  usage        TenantUsage[]
+  memberships          Membership[]
+  pages                Page[]
+  collections          Collection[]
+  items                Item[]
+  globals              Global[]
+  media                Media[]
+  submissions          Submission[]
+  redirects            Redirect[]
+  publishLogs          PublishLog[]
+  billing              TenantBilling?
+  featureFlags         FeatureFlags?
+  usage                TenantUsage[]
+  siteProject          SiteProject?
+  domains              Domain[]
+  analyticsConfig      TenantAnalyticsConfig?
+  analyticsDailies     AnalyticsDaily[]
+  errorDailies         ErrorDaily[]
+  logDailies           LogDaily[]
 
   @@map("tenants")
 }
@@ -328,4 +352,110 @@ model TenantUsage {
 
   @@unique([tenantId, date])
   @@map("tenant_usage")
+}
+
+// ============================================================================
+// DOMAINS & PROJECTS
+// ============================================================================
+
+model SiteProject {
+  tenantId          String   @id @map("tenant_id")
+  vercelProjectId   String   @map("vercel_project_id")
+  vercelProjectName String   @map("vercel_project_name")
+  siteId            String   @map("site_id")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("site_projects")
+}
+
+model Domain {
+  id                String            @id @default(uuid())
+  tenantId          String            @map("tenant_id")
+  hostname          String
+  isPrimary         Boolean           @default(false) @map("is_primary")
+  status            DomainStatus      @default(PENDING)
+  vercelDomainId    String?           @map("vercel_domain_id")
+  verificationType  VerificationType? @map("verification_type")
+  verificationValue String?           @map("verification_value")
+  lastCheckedAt     DateTime?         @map("last_checked_at")
+  error             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, hostname])
+  @@map("domains")
+}
+
+// ============================================================================
+// ANALYTICS
+// ============================================================================
+
+model TenantAnalyticsConfig {
+  tenantId          String   @id @map("tenant_id")
+  plausibleSite     String   @map("plausible_site")
+  sentryProjectSlug String?  @map("sentry_project_slug")
+  axiomDataset      String?  @map("axiom_dataset")
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_analytics_configs")
+}
+
+model AnalyticsDaily {
+  id                  String          @id @default(uuid())
+  tenantId            String          @map("tenant_id")
+  date                DateTime        @db.Date
+  visits              Int
+  pageviews           Int
+  bounceRate          Float?          @map("bounce_rate")
+  avgVisitDurationSec Int?            @map("avg_visit_duration_sec")
+  topPageSlug         String?         @map("top_page_slug")
+  topReferrer         String?         @map("top_referrer")
+  source              AnalyticsSource
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date, source])
+  @@map("analytics_dailies")
+}
+
+model ErrorDaily {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  date      DateTime @db.Date
+  issues    Int
+  events    Int
+  topIssue  String?  @map("top_issue")
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@map("error_dailies")
+}
+
+model LogDaily {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  date         DateTime @db.Date
+  errors       Int
+  warns        Int
+  requests     Int
+  p95LatencyMs Int?     @map("p95_latency_ms")
+
+  // Relations
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@map("log_dailies")
 }

@@ -35,11 +35,11 @@ describe('Tenant billing', () => {
 
   describe('syncBillingFromStripe', () => {
     it('should sync subscription data to database', async () => {
-      const mockSubscription: Partial<Stripe.Subscription> = {
+      const mockSubscription: any = {
         id: 'sub_test123',
         customer: 'cus_test123',
         status: 'active',
-        current_period_end: 1234567890,
+        current_period_end: 1234567890 as any,
         trial_end: null,
         items: {
           data: [
@@ -49,6 +49,9 @@ describe('Tenant billing', () => {
               },
             } as any,
           ],
+          object: 'list',
+          has_more: false,
+          url: '/v1/subscription_items',
         },
       };
 
@@ -85,11 +88,11 @@ describe('Tenant billing', () => {
     });
 
     it('should handle subscription with trial', async () => {
-      const mockSubscription: Partial<Stripe.Subscription> = {
+      const mockSubscription: any = {
         id: 'sub_test123',
         customer: 'cus_test123',
         status: 'trialing',
-        current_period_end: 1234567890,
+        current_period_end: 1234567890 as any,
         trial_end: 1234567800,
         items: {
           data: [
@@ -99,6 +102,9 @@ describe('Tenant billing', () => {
               },
             } as any,
           ],
+          object: 'list',
+          has_more: false,
+          url: '/v1/subscription_items',
         },
       };
 
@@ -124,11 +130,11 @@ describe('Tenant billing', () => {
     });
 
     it('should handle missing billing record gracefully', async () => {
-      const mockSubscription: Partial<Stripe.Subscription> = {
+      const mockSubscription: any = {
         id: 'sub_test123',
         customer: 'cus_test123',
         status: 'active',
-        current_period_end: 1234567890,
+        current_period_end: 1234567890 as any,
         trial_end: null,
         items: {
           data: [
@@ -138,6 +144,9 @@ describe('Tenant billing', () => {
               },
             } as any,
           ],
+          object: 'list',
+          has_more: false,
+          url: '/v1/subscription_items',
         },
       };
 

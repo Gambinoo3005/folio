@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@portfolio-building-service/ui'
+import { Input } from '@portfolio-building-service/ui'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@portfolio-building-service/ui'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@portfolio-building-service/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@portfolio-building-service/ui'
 import { 
   Upload, 
   Search, 

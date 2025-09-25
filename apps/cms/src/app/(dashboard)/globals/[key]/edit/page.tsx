@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { PrismaClient } from '@prisma/client'
 import { getValidatedTenantId } from '@/lib/tenant'
-import { GlobalEditorLayout } from '@/components/editor/global-editor-layout'
+import { UnifiedEditor } from '@/components/editor/unified-editor'
 
 const prisma = new PrismaClient()
 
@@ -34,9 +34,11 @@ export default async function EditGlobal({ params }: EditGlobalProps) {
   }
 
   return (
-    <GlobalEditorLayout 
-      initialData={initialData}
+    <UnifiedEditor 
+      contentType="global"
+      mode={global ? "edit" : "create"}
       globalKey={key}
+      initialData={initialData}
     />
   )
 }

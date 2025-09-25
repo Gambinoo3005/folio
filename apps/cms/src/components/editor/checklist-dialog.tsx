@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@portfolio-building-service/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@portfolio-building-service/ui';
+import { Badge } from '@portfolio-building-service/ui';
+import { Progress } from '@portfolio-building-service/ui';
 import { 
   CheckCircle, 
   AlertCircle, 

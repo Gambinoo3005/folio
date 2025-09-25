@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { PrismaClient } from '@prisma/client'
 import { getValidatedTenantId } from '@/lib/tenant'
-import { ItemEditorLayout } from '@/components/editor/item-editor-layout'
+import { UnifiedEditor } from '@/components/editor/unified-editor'
 
 const prisma = new PrismaClient()
 
@@ -31,10 +31,11 @@ export default async function NewItem({ params }: NewItemProps) {
   }
 
   return (
-    <ItemEditorLayout 
+    <UnifiedEditor 
+      contentType="item"
       mode="create"
+      collectionId={collectionRecord.id}
       initialData={{
-        collectionId: collectionRecord.id,
         title: '',
         slug: '',
         status: 'DRAFT',

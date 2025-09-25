@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { CmsLayout } from "@/components/cms-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@portfolio-building-service/ui"
+import { Button } from "@portfolio-building-service/ui"
 import { Plus, FolderOpen, FileText, Image, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import { CollectionsLoadingWrapper } from "@/components/loading-wrapper"

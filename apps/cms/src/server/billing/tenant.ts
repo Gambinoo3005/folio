@@ -88,7 +88,7 @@ export async function startSubscription(
       stripeSubscriptionId: subscription.id,
       plan,
       status: mapStripeStatusToBillingStatus(subscription.status),
-      currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+      currentPeriodEnd: (subscription as any).current_period_end ? new Date((subscription as any).current_period_end * 1000) : null,
       trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
     },
   });
@@ -143,7 +143,7 @@ export async function syncBillingFromStripe(subscription: Stripe.Subscription): 
       stripeSubscriptionId: subscription.id,
       plan,
       status: mapStripeStatusToBillingStatus(subscription.status),
-      currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+      currentPeriodEnd: (subscription as any).current_period_end ? new Date((subscription as any).current_period_end * 1000) : null,
       trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
     },
   });

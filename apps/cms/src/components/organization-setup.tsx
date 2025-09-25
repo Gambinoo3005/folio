@@ -1,8 +1,8 @@
 "use client"
 
 import { useClerk } from "@clerk/nextjs"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@portfolio-building-service/ui"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@portfolio-building-service/ui"
 import { Building2, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
